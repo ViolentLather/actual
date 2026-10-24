@@ -1,0 +1,61 @@
+name: Simplifi web build
+
+# Builds the web app for this fork and publishes it as a zip on the
+# "simplifi-latest" release, so a self-hosted sync server can serve it by
+# pointing ACTUAL_WEB_ROOT at the unzipped folder.
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  CI: true
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    # Only run on the fork; upstream builds the web app in build.yml.
+    if: github.repository != 'actualbudget/actual'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Set up environment
+        uses: ./.github/actions/setup
+        with:
+          download-translations: 'false'
+      - name: Build web app
+        run: yarn build:browser --skip-translations
+      - name: Package build
+        run: |
+          echo "${GITHUB_SHA}" > packages/desktop-client/build/simplifi-version.txt
+          cd packages/desktop-client/build
+          zip -qr "${GITHUB_WORKSPACE}/simplifi-web.zip" .
+      - name: Publish release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          notes="Web app build of ${GITHUB_SHA}. Unzip it and point the sync server's ACTUAL_WEB_ROOT at the folder."
+          if gh release view simplifi-latest > /dev/null 2>&1; then
+            gh release upload simplifi-latest simplifi-web.zip --clobber
+            gh release edit simplifi-latest --notes "$notes"
+          else
+            gh release create simplifi-latest simplifi-web.zip \
+              --title "Simplifi web app (latest)" --notes "$notes" --latest
+          fi
