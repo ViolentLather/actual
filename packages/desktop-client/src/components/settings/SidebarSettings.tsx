@@ -5,6 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Button } from '@actual-app/components/button';
 import { Select } from '@actual-app/components/select';
 import { theme } from '@actual-app/components/theme';
+import { Toggle } from '@actual-app/components/toggle';
 import { css } from '@emotion/css';
 
 import {
@@ -30,6 +31,9 @@ export function SidebarSettings() {
   // An unset start page opens the dashboard, which isn't a sidebar menu item.
   const [startPagePref, setStartPagePref] = useSyncedPref('sidebar-start-page');
   const isDashboardStart = !startPagePref;
+  const [showSpendingPlanPref, setShowSpendingPlanPref] = useSyncedPref(
+    'simplifi.show-spending-plan',
+  );
 
   const onToggleItem = (id: SidebarMenuItemId, isVisible: boolean) => {
     saveItems(
@@ -89,7 +93,8 @@ export function SidebarSettings() {
       >
         <GridList
           aria-label={t('Sidebar pages')}
-          items={availableItems}
+          // Spending Plan visibility has its own toggle below.
+          items={availableItems.filter(item => item.id !== 'budget')}
           dragAndDropHooks={dragAndDropHooks}
           dependencies={[itemDetails, startPage]}
           className={css({ display: 'flex', flexDirection: 'column' })}
@@ -106,6 +111,21 @@ export function SidebarSettings() {
           )}
         </GridList>
       </SettingsRow>
+      <SettingsRow
+        title={t('Spending Plan')}
+        description={t(
+          'Show the budgeting page in the navigation. Leave it off if you only track income and spending.',
+        )}
+        htmlFor="settings-showSpendingPlan"
+        control={
+          <Toggle
+            id="settings-showSpendingPlan"
+            aria-label={t('Show Spending Plan')}
+            isOn={showSpendingPlanPref === 'true'}
+            onToggle={isOn => setShowSpendingPlanPref(String(isOn))}
+          />
+        }
+      />
       <SettingsRow
         title={t('Start page')}
         description={t("Actual's home page.")}

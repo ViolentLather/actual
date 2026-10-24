@@ -61,6 +61,10 @@ export function CategoryComparisonRow({
       style={{
         display: 'grid',
         gridTemplateColumns: '200px minmax(0, 1fr) 190px',
+        '@media (max-width: 640px)': {
+          gridTemplateColumns: '90px minmax(0, 1fr) 70px',
+          padding: isNested ? '10px 10px 10px 18px' : '12px 10px',
+        },
         alignItems: 'center',
         gap: 12,
         padding: isNested ? '10px 16px 10px 32px' : '14px 16px',

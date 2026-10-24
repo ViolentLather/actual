@@ -1,34 +1,25 @@
 import React, { useCallback, useState } from 'react';
-import type { ComponentProps, ComponentType, CSSProperties } from 'react';
+import type { ComponentProps, CSSProperties, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router';
 import { animated, config, useSpring } from 'react-spring';
 
 import { useResponsive } from '@actual-app/components/hooks/useResponsive';
-import {
-  SvgAdd,
-  SvgCog,
-  SvgPiggyBank,
-  SvgReports,
-  SvgWallet,
-} from '@actual-app/components/icons/v1';
-import { SvgCalendar3 } from '@actual-app/components/icons/v2';
+import { SvgAdd, SvgCog } from '@actual-app/components/icons/v1';
 import { styles } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 import { useDrag } from '@use-gesture/react';
 
+import { SfIcon } from '#components/simplifi/SfIcon';
 import { useIsTestEnv } from '#hooks/useIsTestEnv';
 import { useScrollListener } from '#hooks/useScrollListener';
+import { useSyncedPref } from '#hooks/useSyncedPref';
 
 const COLUMN_COUNT = 3;
-const ROW_COUNT = 2;
 const PILL_HEIGHT = 15;
 const ROW_HEIGHT = 70;
-const TOTAL_HEIGHT = ROW_HEIGHT * ROW_COUNT;
 const OPEN_FULL_Y = 1;
-const OPEN_DEFAULT_Y = TOTAL_HEIGHT - ROW_HEIGHT;
-const HIDDEN_Y = TOTAL_HEIGHT;
 
 export const MOBILE_NAV_HEIGHT = ROW_HEIGHT + PILL_HEIGHT;
 
@@ -39,6 +30,13 @@ export function MobileNavTabs() {
   const [navbarState, setNavbarState] = useState<'default' | 'open' | 'hidden'>(
     'default',
   );
+  const [showSpendingPlanPref] = useSyncedPref('simplifi.show-spending-plan');
+  const showSpendingPlan = showSpendingPlanPref === 'true';
+  // The first row is always visible; drag the sheet up to see the rest.
+  const rowCount = showSpendingPlan ? 4 : 3;
+  const totalHeight = ROW_HEIGHT * rowCount;
+  const openDefaultY = totalHeight - ROW_HEIGHT;
+  const hiddenY = totalHeight;
 
   const navTabStyle = {
     flex: `1 1 ${100 / COLUMN_COUNT}%`,
@@ -47,7 +45,7 @@ export function MobileNavTabs() {
     maxWidth: `${100 / COLUMN_COUNT}%`,
   };
 
-  const [{ y }, api] = useSpring(() => ({ from: { y: OPEN_DEFAULT_Y } }), []);
+  const [{ y }, api] = useSpring(() => ({ from: { y: openDefaultY } }), []);
 
   const openFull = useCallback(
     ({ canceled }: { canceled?: boolean }) => {
@@ -67,65 +65,89 @@ export function MobileNavTabs() {
     (velocity = 0) => {
       setNavbarState('default');
       void api.start({
-        to: { y: OPEN_DEFAULT_Y },
+        to: { y: openDefaultY },
         immediate: isTestEnv,
         config: { ...config.stiff, velocity },
       });
     },
-    [api, isTestEnv],
+    [api, isTestEnv, openDefaultY],
   );
 
   const hide = useCallback(
     (velocity = 0) => {
       setNavbarState('hidden');
       void api.start({
-        to: { y: HIDDEN_Y },
+        to: { y: hiddenY },
         immediate: isTestEnv,
         config: { ...config.stiff, velocity },
       });
     },
-    [api, isTestEnv],
+    [api, isTestEnv, hiddenY],
   );
 
+  const iconProps = { width: 22, height: 22, style: { minHeight: 22 } };
   const navTabs = [
     {
-      name: t('Budget'),
-      path: '/budget',
-      style: navTabStyle,
-      Icon: SvgWallet,
+      name: t('Dashboard'),
+      path: '/dashboard',
+      icon: <SfIcon name="dashboard" {...iconProps} />,
     },
     {
       name: t('Transaction'),
       path: '/transactions/new',
-      style: navTabStyle,
-      Icon: SvgAdd,
+      icon: <SvgAdd {...iconProps} />,
     },
     {
       name: t('Accounts'),
       path: '/accounts',
-      style: navTabStyle,
-      Icon: SvgPiggyBank,
+      icon: <SfIcon name="transactions" {...iconProps} />,
+    },
+    {
+      name: t('Spending'),
+      path: '/spending',
+      icon: <SfIcon name="spending" {...iconProps} />,
+    },
+    {
+      name: t('Net Worth'),
+      path: '/net-worth',
+      icon: <SfIcon name="netWorth" {...iconProps} />,
+    },
+    {
+      name: t('Bills & Income'),
+      path: '/schedules',
+      icon: <SfIcon name="bills" {...iconProps} />,
+    },
+    {
+      name: t('Investments'),
+      path: '/investments',
+      icon: <SfIcon name="investments" {...iconProps} />,
     },
     {
       name: t('Reports'),
       path: '/reports',
-      style: navTabStyle,
-      Icon: SvgReports,
-    },
-    {
-      name: t('Schedules'),
-      path: '/schedules',
-      style: navTabStyle,
-      Icon: SvgCalendar3,
+      icon: <SfIcon name="reports" {...iconProps} />,
     },
     {
       name: t('Settings'),
       path: '/settings',
-      style: navTabStyle,
-      Icon: SvgCog,
+      icon: <SvgCog {...iconProps} />,
     },
+    ...(showSpendingPlan
+      ? [
+          {
+            name: t('Spending Plan'),
+            path: '/budget',
+            icon: <SfIcon name="plan" {...iconProps} />,
+          },
+        ]
+      : []),
   ].map(tab => (
-    <NavTab key={tab.path} onClick={() => openDefault()} {...tab} />
+    <NavTab
+      key={tab.path}
+      style={navTabStyle}
+      onClick={() => openDefault()}
+      {...tab}
+    />
   ));
 
   useScrollListener(
@@ -173,7 +195,7 @@ export function MobileNavTabs() {
     {
       from: () => [0, y.get()],
       filterTaps: true,
-      bounds: { top: -TOTAL_HEIGHT, bottom: TOTAL_HEIGHT - ROW_HEIGHT },
+      bounds: { top: -totalHeight, bottom: totalHeight - ROW_HEIGHT },
       axis: 'y',
       rubberband: true,
     },
@@ -189,7 +211,7 @@ export function MobileNavTabs() {
         backgroundColor: theme.mobileNavBackground,
         borderTop: `1px solid ${theme.menuBorder}`,
         ...styles.shadow,
-        height: TOTAL_HEIGHT + PILL_HEIGHT,
+        height: totalHeight + PILL_HEIGHT,
         width: '100%',
         position: 'fixed',
         zIndex: 100,
@@ -214,7 +236,7 @@ export function MobileNavTabs() {
           style={{
             flexDirection: 'row',
             flexWrap: 'wrap',
-            height: TOTAL_HEIGHT,
+            height: totalHeight,
             width: '100%',
           }}
         >
@@ -225,21 +247,15 @@ export function MobileNavTabs() {
   );
 }
 
-type NavTabIconProps = {
-  width: number;
-  height: number;
-  style?: CSSProperties;
-};
-
 type NavTabProps = {
   name: string;
   path: string;
-  Icon: ComponentType<NavTabIconProps>;
+  icon: ReactNode;
   style?: CSSProperties;
   onClick: ComponentProps<typeof NavLink>['onClick'];
 };
 
-function NavTab({ Icon: TabIcon, name, path, style, onClick }: NavTabProps) {
+function NavTab({ icon, name, path, style, onClick }: NavTabProps) {
   return (
     <NavLink
       to={path}
@@ -257,7 +273,7 @@ function NavTab({ Icon: TabIcon, name, path, style, onClick }: NavTabProps) {
       })}
       onClick={onClick}
     >
-      <TabIcon width={22} height={22} style={{ minHeight: '22px' }} />
+      {icon}
       {name}
     </NavLink>
   );

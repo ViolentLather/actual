@@ -50,6 +50,7 @@ import { SidebarMenuRoute } from './sidebar/SidebarMenuRoute';
 import { AccountsPanel } from './simplifi/AccountsPanel';
 import { AppRail } from './simplifi/AppRail';
 import { Dashboard } from './simplifi/dashboard/Dashboard';
+import { InvestmentsPage } from './simplifi/investments/InvestmentsPage';
 import { showsAccountsPanel } from './simplifi/navigation';
 import { NetWorthPage } from './simplifi/networth/NetWorthPage';
 import { PageTitleProvider } from './simplifi/PageTitleContext';
@@ -273,9 +274,7 @@ export function FinancesApp() {
                               FallbackComponent={FeatureErrorFallback}
                               resetKeys={[location.pathname]}
                             >
-                              <NarrowNotSupported>
-                                <Dashboard />
-                              </NarrowNotSupported>
+                              <Dashboard />
                             </ErrorBoundary>
                           }
                         />
@@ -287,6 +286,17 @@ export function FinancesApp() {
                               resetKeys={[location.pathname]}
                             >
                               <NetWorthPage />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/investments"
+                          element={
+                            <ErrorBoundary
+                              FallbackComponent={FeatureErrorFallback}
+                              resetKeys={[location.pathname]}
+                            >
+                              <InvestmentsPage />
                             </ErrorBoundary>
                           }
                         />
@@ -613,6 +623,10 @@ export function FinancesApp() {
                         element={<MobileNavTabs />}
                       />
                       <Route path="/schedules" element={<MobileNavTabs />} />
+                      <Route path="/dashboard" element={<MobileNavTabs />} />
+                      <Route path="/spending" element={<MobileNavTabs />} />
+                      <Route path="/net-worth" element={<MobileNavTabs />} />
+                      <Route path="/investments" element={<MobileNavTabs />} />
                       <Route path="*" element={null} />
                     </Routes>
                   </MobilePageHeaderProvider>

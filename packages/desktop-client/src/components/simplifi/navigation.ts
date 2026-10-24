@@ -49,7 +49,15 @@ export function getPrimaryRailItems(t: TFunction): RailNavItem[][] {
         to: '/schedules',
       },
     ],
-    [{ id: 'reports', title: t('Reports'), icon: 'reports', to: '/reports' }],
+    [
+      {
+        id: 'investments',
+        title: t('Investments'),
+        icon: 'investments',
+        to: '/investments',
+      },
+      { id: 'reports', title: t('Reports'), icon: 'reports', to: '/reports' },
+    ],
   ];
 }
 
@@ -77,6 +85,7 @@ export function getRouteTitle(pathname: string, t: TFunction): string {
     ['/categories', t('Transactions')],
     ['/spending', t('Spending')],
     ['/net-worth', t('Net Worth')],
+    ['/investments', t('Investments')],
     ['/budget', t('Spending Plan')],
     ['/schedules', t('Bills & Income')],
     ['/reports', t('Reports')],

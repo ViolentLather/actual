@@ -3,6 +3,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useTranslation } from 'react-i18next';
 
 import { Menu } from '@actual-app/components/menu';
+import { send } from '@actual-app/core/platform/client/connection';
 import { validForMerge } from '@actual-app/core/shared/merge';
 import { q } from '@actual-app/core/shared/query';
 import {
@@ -13,6 +14,10 @@ import { isPreviewId } from '@actual-app/core/shared/transactions';
 import { validForTransfer } from '@actual-app/core/shared/transfer';
 import type { TransactionEntity } from '@actual-app/core/types/models';
 
+import {
+  isExcludedFromReports,
+  setExcludedFromReports,
+} from '#components/simplifi/data/exclusion';
 import { SelectedItemsButton } from '#components/table';
 import { useSchedules } from '#hooks/useSchedules';
 import { useSelectedItems } from '#hooks/useSelected';
@@ -71,6 +76,21 @@ export function SelectedTransactionsButton({
   const dispatch = useDispatch();
   const selectedItems = useSelectedItems();
   const selectedIds = useMemo(() => [...selectedItems], [selectedItems]);
+
+  const areAllExcluded =
+    selectedIds.length > 0 &&
+    selectedIds.every(id => isExcludedFromReports(getTransaction(id)?.notes));
+
+  const onToggleExcluded = async () => {
+    const updated = selectedIds
+      .map(id => getTransaction(id))
+      .filter((trans): trans is TransactionEntity => trans != null)
+      .map(trans => ({
+        id: trans.id,
+        notes: setExcludedFromReports(trans.notes, !areAllExcluded),
+      }));
+    await send('transactions-batch-update', { updated });
+  };
 
   const scheduleIds = useMemo(() => {
     return selectedIds
@@ -359,6 +379,12 @@ export function SelectedTransactionsButton({
                       name: 'run-rules',
                       text: t('Run Rules'),
                     } as const,
+                    {
+                      name: 'toggle-excluded',
+                      text: areAllExcluded
+                        ? t('Include in reports')
+                        : t('Exclude from reports'),
+                    } as const,
                   ]),
 
               ...(showMakeTransfer
@@ -452,6 +478,9 @@ export function SelectedTransactionsButton({
             break;
           case 'set-transfer':
             onSetTransfer(selectedIds);
+            break;
+          case 'toggle-excluded':
+            void onToggleExcluded();
             break;
           default:
             // @ts-expect-error fix me

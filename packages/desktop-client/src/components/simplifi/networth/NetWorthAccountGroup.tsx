@@ -13,6 +13,8 @@ import { SfIcon } from '#components/simplifi/SfIcon';
 import { SfAmount } from '#components/simplifi/ui/SfAmount';
 import { SfChange } from '#components/simplifi/ui/SfChange';
 
+import { netWorthRowClassName, netWorthRowStyle } from './netWorthRowStyle';
+
 type NetWorthAccountGroupProps = {
   group: AccountGroupRow;
   changeLabel: string;
@@ -36,11 +38,8 @@ export function NetWorthAccountGroup({
         variant="bare"
         aria-expanded={isOpen}
         onPress={() => setIsOpen(!isOpen)}
+        className={netWorthRowClassName}
         style={{
-          display: 'grid',
-          gridTemplateColumns: '20px minmax(0, 1.2fr) minmax(0, 1.5fr) auto',
-          alignItems: 'center',
-          gap: 12,
           padding: '12px 16px',
           borderRadius: 8,
           textAlign: 'left',
@@ -62,12 +61,14 @@ export function NetWorthAccountGroup({
             </Trans>
           </Text>
         </View>
-        <SfChange
-          change={group.change}
-          base={group.balance - group.change}
-          label={changeLabel}
-          size="small"
-        />
+        <View className="nw-change">
+          <SfChange
+            change={group.change}
+            base={group.balance - group.change}
+            label={changeLabel}
+            size="small"
+          />
+        </View>
         <SfAmount value={group.balance} style={{ fontWeight: 600 }} />
       </Button>
       {isOpen && (
@@ -78,11 +79,7 @@ export function NetWorthAccountGroup({
               variant="internal"
               to={`/accounts/${row.account.id}`}
               style={{
-                display: 'grid',
-                gridTemplateColumns:
-                  '20px minmax(0, 1.2fr) minmax(0, 1.5fr) auto',
-                alignItems: 'center',
-                gap: 12,
+                ...netWorthRowStyle,
                 padding: '10px 16px',
                 color: theme.pageText,
                 textDecoration: 'none',
@@ -91,11 +88,13 @@ export function NetWorthAccountGroup({
             >
               <span />
               <Text style={styles.ellipsisText}>{row.account.name}</Text>
-              <SfChange
-                change={row.change}
-                base={row.balance - row.change}
-                size="small"
-              />
+              <View className="nw-change">
+                <SfChange
+                  change={row.change}
+                  base={row.balance - row.change}
+                  size="small"
+                />
+              </View>
               <SfAmount value={row.balance} />
             </Link>
           ))}

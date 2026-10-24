@@ -16,10 +16,12 @@ import {
 } from '#components/simplifi/data/netWorthPeriods';
 import type { NetWorthPeriod } from '#components/simplifi/data/netWorthPeriods';
 import { useAccountBalancesSince } from '#components/simplifi/data/useAccountBalances';
+import { useAccountFilter } from '#components/simplifi/data/useAccountFilter';
 import { useEarliestTransactionDate } from '#components/simplifi/data/useEarliestTransactionDate';
 import { useNetWorthSeries } from '#components/simplifi/data/useNetWorthSeries';
-import { CARD_GAP } from '#components/simplifi/layout';
+import { CARD_GAP, PAGE_BOTTOM_PADDING } from '#components/simplifi/layout';
 import { SfIcon } from '#components/simplifi/SfIcon';
+import { AccountFilterButton } from '#components/simplifi/ui/AccountFilterButton';
 import { SfAmount } from '#components/simplifi/ui/SfAmount';
 import { SfCard } from '#components/simplifi/ui/SfCard';
 import { SfChange } from '#components/simplifi/ui/SfChange';
@@ -45,13 +47,22 @@ export function NetWorthPage() {
 
   const startDate = getPeriodStartDate(period, earliestDate);
   const endDate = monthUtils.currentDay();
-  const { points, startValue } = useNetWorthSeries(startDate, endDate);
+  const { selectedIds } = useAccountFilter();
+  const { points, startValue } = useNetWorthSeries(
+    startDate,
+    endDate,
+    selectedIds,
+  );
   const balances = useAccountBalancesSince(startDate);
   const current = points.at(-1)?.value ?? startValue;
   const openAccounts = accounts.filter(account => !account.closed);
+  const includedAccounts = selectedIds
+    ? accounts.filter(account => selectedIds.includes(account.id))
+    : accounts;
+  const includedOpenCount = includedAccounts.filter(a => !a.closed).length;
 
   const breakdown = buildNetWorthBreakdown(
-    accounts,
+    includedAccounts,
     accountGroups,
     balances.current,
     balances.previous,
@@ -66,7 +77,7 @@ export function NetWorthPage() {
     <Page header={t('Net Worth')}>
       <View
         data-testid="net-worth-page"
-        style={{ gap: CARD_GAP, paddingBottom: 32, flexShrink: 0 }}
+        style={{ gap: CARD_GAP, flexShrink: 0, ...PAGE_BOTTOM_PADDING }}
       >
         <SfCard bodyStyle={{ padding: '14px 18px' }}>
           <View
@@ -89,10 +100,11 @@ export function NetWorthPage() {
             <View style={{ flex: 1 }} />
             <Text style={{ fontSize: 14, color: theme.pageTextLight }}>
               <Trans>
-                Accounts included: {{ count: openAccounts.length }} of{' '}
+                Accounts included: {{ count: includedOpenCount }} of{' '}
                 {{ total: openAccounts.length }}
               </Trans>
             </Text>
+            <AccountFilterButton />
             <Button
               variant="primary"
               onPress={() =>

@@ -6,7 +6,6 @@ import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 import * as monthUtils from '@actual-app/core/shared/months';
 
-import { Link } from '#components/common/Link';
 import { Page } from '#components/Page';
 import { categoryColor } from '#components/simplifi/charts/chartColors';
 import { SfBarChart } from '#components/simplifi/charts/SfBarChart';
@@ -17,17 +16,18 @@ import {
 } from '#components/simplifi/data/cashFlow';
 import { getSpendingPeriods } from '#components/simplifi/data/spendingPeriods';
 import type { SpendingInterval } from '#components/simplifi/data/spendingPeriods';
+import { useAccountFilter } from '#components/simplifi/data/useAccountFilter';
 import { useMonthlyCategoryTotals } from '#components/simplifi/data/useMonthlyCategoryTotals';
-import { CARD_GAP, CARD_RADIUS } from '#components/simplifi/layout';
+import { CARD_GAP, PAGE_BOTTOM_PADDING } from '#components/simplifi/layout';
+import { AccountFilterButton } from '#components/simplifi/ui/AccountFilterButton';
 import { SavingsRateBadge } from '#components/simplifi/ui/SavingsRateBadge';
 import { SfAmount } from '#components/simplifi/ui/SfAmount';
 import { SfCard } from '#components/simplifi/ui/SfCard';
 import { SfSegmented } from '#components/simplifi/ui/SfSegmented';
+import { UncategorizedBanner } from '#components/simplifi/ui/UncategorizedBanner';
 import { useCategories } from '#hooks/useCategories';
 import { useDateFormat } from '#hooks/useDateFormat';
 import { useLocale } from '#hooks/useLocale';
-import { useSheetValue } from '#hooks/useSheetValue';
-import * as bindings from '#spreadsheet/bindings';
 
 import { CategoryComparisonRow } from './CategoryComparisonRow';
 import { SpendingStatTile } from './SpendingStatTile';
@@ -47,14 +47,12 @@ export function SpendingPage() {
   const [expandedGroups, setExpandedGroups] = useState<ReadonlySet<string>>(
     new Set(),
   );
-  const uncategorizedCount: number | null = useSheetValue(
-    bindings.uncategorizedCount(),
-  );
 
   const periods = getSpendingPeriods(interval, locale);
   const firstMonth = periods[0].months[0];
   const lastMonth = periods[periods.length - 1].months.at(-1) ?? firstMonth;
-  const totals = useMonthlyCategoryTotals(firstMonth, lastMonth);
+  const { selectedIds } = useAccountFilter();
+  const totals = useMonthlyCategoryTotals(firstMonth, lastMonth, selectedIds);
   const { data: categoryData } = useCategories();
   const categories = categoryData?.list ?? [];
   const groups = categoryData?.grouped ?? [];
@@ -124,11 +122,18 @@ export function SpendingPage() {
     <Page header={t('Spending')}>
       <View
         data-testid="spending-page"
-        style={{ gap: CARD_GAP, paddingBottom: 32, flexShrink: 0 }}
+        style={{ gap: CARD_GAP, flexShrink: 0, ...PAGE_BOTTOM_PADDING }}
       >
         <SfCard bodyStyle={{ padding: '14px 18px' }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-            <Text style={{ fontSize: 14 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 12,
+              flexWrap: 'wrap',
+            }}
+          >
+            <Text style={{ fontSize: 14, whiteSpace: 'nowrap' }}>
               <Trans>View spend by:</Trans>
             </Text>
             <SfSegmented
@@ -144,6 +149,8 @@ export function SpendingPage() {
                 { value: 'year', label: t('Year') },
               ]}
             />
+            <View style={{ flex: 1 }} />
+            <AccountFilterButton />
           </View>
         </SfCard>
 
@@ -195,37 +202,15 @@ export function SpendingPage() {
         </View>
 
         <SfCard testId="spending-categories" bodyStyle={{ padding: 0 }}>
-          {uncategorizedCount != null && uncategorizedCount > 0 && (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 12,
-                margin: '16px 16px 0',
-                padding: '12px 16px',
-                borderRadius: CARD_RADIUS / 2,
-                backgroundColor: theme.errorBackground,
-              }}
-            >
-              <Text style={{ flex: 1 }}>
-                {t('{{count}} transaction needs to be categorized.', {
-                  count: uncategorizedCount,
-                })}
-              </Text>
-              <Link
-                variant="button"
-                buttonVariant="primary"
-                to="/categories/uncategorized"
-              >
-                <Trans>Categorize now</Trans>
-              </Link>
-            </View>
-          )}
+          <UncategorizedBanner style={{ margin: '16px 16px 0' }} />
 
           <View
             style={{
               display: 'grid',
               gridTemplateColumns: '200px minmax(0, 1fr) 190px',
+              '@media (max-width: 640px)': {
+                gridTemplateColumns: 'minmax(0, 1fr)',
+              },
               alignItems: 'center',
               gap: 12,
               padding: '14px 16px',

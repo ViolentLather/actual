@@ -10,28 +10,39 @@ export type NetWorthPoint = {
 
 type DailyTotal = { date: string; amount: number };
 
+/** Query filter for a comma-joined list of account ids ('' = all). */
+function accountFilterFor(accountKey: string) {
+  return accountKey ? { account: { $oneof: accountKey.split(',') } } : {};
+}
+
 /**
  * Daily net worth (sum of every account balance) from `startDate` through
  * `endDate`. When the range is long, the series is sampled to one point per
  * week so charts stay responsive.
  */
-export function useNetWorthSeries(startDate: string, endDate: string) {
+export function useNetWorthSeries(
+  startDate: string,
+  endDate: string,
+  accountIds: string[] | null = null,
+) {
+  const accountKey = accountIds ? accountIds.join(',') : '';
   const startingBalance = useQuery<number>(
     () =>
       q('transactions')
-        .filter({ date: { $lt: startDate } })
+        .filter({ date: { $lt: startDate }, ...accountFilterFor(accountKey) })
         .calculate({ $sum: '$amount' }),
-    [startDate],
+    [startDate, accountKey],
   );
   const dailyTotals = useQuery<DailyTotal>(
     () =>
       q('transactions')
         .filter({
           $and: [{ date: { $gte: startDate } }, { date: { $lte: endDate } }],
+          ...accountFilterFor(accountKey),
         })
         .groupBy('date')
         .select(['date', { amount: { $sum: '$amount' } }]),
-    [startDate, endDate],
+    [startDate, endDate, accountKey],
   );
 
   const isLoading = startingBalance.isLoading || dailyTotals.isLoading;

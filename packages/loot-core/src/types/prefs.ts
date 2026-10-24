@@ -71,7 +71,15 @@ export type SyncedPrefs = Partial<
     | `flip-amount-${string}-${'csv' | 'qif'}`
     | `flags.${FeatureFlag}`
     | `learn-categories`
-    | `show-hidden-tags`,
+    | `show-hidden-tags`
+    // JSON array of transaction pair keys the user marked as "not a transfer"
+    | 'simplifi.ignored-transfers'
+    // JSON array of account ids shown on the Investments page
+    | 'simplifi.investment-accounts'
+    // 'true' to show the Spending Plan (budget) page in the navigation
+    | 'simplifi.show-spending-plan'
+    // Epoch ms; transactions added after this are shown as unreviewed
+    | 'simplifi.reviewed-through',
     string
   >
 >;
@@ -119,6 +127,8 @@ export type LocalPrefs = Partial<{
    * back-to-back sync attempts.
    */
   'bankSync.lastAutomaticRun': number;
+  /** Account ids the Spending and Net Worth pages are limited to. */
+  'simplifi.accountFilter': string[];
 }>;
 
 export type Theme =
