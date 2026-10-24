@@ -10,21 +10,26 @@ import { css } from '@emotion/css';
 import {
   getDefaultSidebarMenuItems,
   moveSidebarMenuItem,
-  parseSidebarStartPage,
 } from '#components/sidebar/sidebarMenu';
 import type { SidebarMenuItemId } from '#components/sidebar/sidebarMenu';
 import { useSidebarMenuItemDetails } from '#components/sidebar/useSidebarMenuItemDetails';
 import { useSidebarMenu } from '#hooks/useSidebarMenu';
+import { useSyncedPref } from '#hooks/useSyncedPref';
 
 import { SettingsGroup } from './SettingsGroup';
 import { SettingsRow } from './SettingsRow';
 import { SidebarMenuListItem } from './SidebarMenuListItem';
+
+const DASHBOARD_START_PAGE = 'dashboard' as const;
 
 export function SidebarSettings() {
   const { t } = useTranslation();
   const itemDetails = useSidebarMenuItemDetails();
   const { items, availableItems, startPage, saveItems, saveStartPage } =
     useSidebarMenu();
+  // An unset start page opens the dashboard, which isn't a sidebar menu item.
+  const [startPagePref, setStartPagePref] = useSyncedPref('sidebar-start-page');
+  const isDashboardStart = !startPagePref;
 
   const onToggleItem = (id: SidebarMenuItemId, isVisible: boolean) => {
     saveItems(
@@ -37,7 +42,7 @@ export function SidebarSettings() {
   const onResetToDefault = () => {
     const defaultItems = getDefaultSidebarMenuItems();
     saveItems(defaultItems);
-    saveStartPage(parseSidebarStartPage(undefined, defaultItems));
+    setStartPagePref('');
   };
 
   const { dragAndDropHooks } = useDragAndDrop({
@@ -95,7 +100,7 @@ export function SidebarSettings() {
               item={item}
               label={itemDetails[item.id].title}
               Icon={itemDetails[item.id].Icon}
-              isStartPage={item.id === startPage}
+              isStartPage={!isDashboardStart && item.id === startPage}
               onToggle={onToggleItem}
             />
           )}
@@ -106,14 +111,20 @@ export function SidebarSettings() {
         description={t("Actual's home page.")}
         htmlFor="settings-sidebarStartPage"
         control={
-          <Select
+          <Select<SidebarMenuItemId | typeof DASHBOARD_START_PAGE>
             id="settings-sidebarStartPage"
-            value={startPage}
-            onChange={saveStartPage}
-            options={availableItems.map(item => [
-              item.id,
-              itemDetails[item.id].title,
-            ])}
+            value={isDashboardStart ? DASHBOARD_START_PAGE : startPage}
+            onChange={value =>
+              value === DASHBOARD_START_PAGE
+                ? setStartPagePref('')
+                : saveStartPage(value)
+            }
+            options={[
+              [DASHBOARD_START_PAGE, t('Dashboard')],
+              ...availableItems.map(
+                item => [item.id, itemDetails[item.id].title] as const,
+              ),
+            ]}
           />
         }
       />

@@ -53,7 +53,7 @@ export function BudgetName({ children }: BudgetNameProps) {
   );
 }
 
-function EditableBudgetName() {
+export function EditableBudgetName() {
   const { t } = useTranslation();
   const [budgetName, setBudgetNamePref] = useMetadataPref('budgetName');
   const dispatch = useDispatch();

@@ -8,7 +8,6 @@ import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 import { SvgArrowLeft } from '@actual-app/components/icons/v1';
 import {
   SvgAlertTriangle,
-  SvgNavigationMenu,
   SvgViewHide,
   SvgViewShow,
 } from '@actual-app/components/icons/v2';
@@ -20,7 +19,6 @@ import { theme } from '@actual-app/components/theme';
 import { Tooltip } from '@actual-app/components/tooltip';
 import { View } from '@actual-app/components/view';
 import { isDevelopmentEnvironment } from '@actual-app/core/shared/environment';
-import * as Platform from '@actual-app/core/shared/platform';
 import { css } from '@emotion/css';
 
 import { sync } from '#app/appSlice';
@@ -42,7 +40,11 @@ import { HelpMenu } from './HelpMenu';
 import { LoggedInUser } from './LoggedInUser';
 import { NotificationsButton } from './news/NotificationsButton';
 import { useServerURL } from './ServerContext';
-import { useSidebar } from './sidebar/SidebarProvider';
+import { hasMacOSWindowButtons } from './sidebar/SidebarShell';
+import { HEADER_HEIGHT } from './simplifi/layout';
+import { getRouteTitle } from './simplifi/navigation';
+import { usePageTitle } from './simplifi/PageTitleContext';
+import { SfIcon } from './simplifi/SfIcon';
 import { ThemeSelector } from './ThemeSelector';
 
 function UncategorizedButton() {
@@ -271,58 +273,36 @@ export function Titlebar({ style }: TitlebarProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const sidebar = useSidebar();
   const { isNarrowWidth } = useResponsive();
   const serverURL = useServerURL();
-  const [floatingSidebar] = useGlobalPref('floatingSidebar');
   const isTestEnv = useIsTestEnv();
+  const pageTitle = usePageTitle();
+  const title = pageTitle ?? getRouteTitle(location.pathname, t);
 
   return isNarrowWidth ? null : (
     <View
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        padding: '0 10px 0 15px',
-        height: 36,
-        pointerEvents: 'none',
-        '& *': {
-          pointerEvents: 'auto',
-        },
-        ...(!Platform.isBrowser && Platform.OS === 'mac' && floatingSidebar
-          ? { paddingLeft: 80 }
-          : {}),
+        padding: '0 16px 0 24px',
+        height: HEADER_HEIGHT,
+        flexShrink: 0,
+        borderBottom: `1px solid ${theme.tableBorder}`,
+        backgroundColor: theme.pageBackground,
+        ...(hasMacOSWindowButtons() ? { paddingLeft: 80 } : {}),
         ...style,
       }}
     >
-      {(floatingSidebar || sidebar.alwaysFloats) && (
-        <Button
-          aria-label={t('Sidebar menu')}
-          variant="bare"
-          style={{ marginRight: 8 }}
-          onHoverStart={e => {
-            if (e.pointerType === 'mouse') {
-              sidebar.setHidden(false);
-            }
-          }}
-          onPress={e => {
-            if (e.pointerType !== 'mouse') {
-              sidebar.setHidden(!sidebar.hidden);
-            }
-          }}
-        >
-          <SvgNavigationMenu
-            className="menu"
-            style={{ width: 15, height: 15, left: 0 }}
-          />
-        </Button>
-      )}
-
       <Routes>
         <Route
           path="*"
           element={
             location.state?.goBack ? (
-              <Button variant="bare" onPress={() => navigate(-1)}>
+              <Button
+                variant="bare"
+                style={{ marginRight: 8 }}
+                onPress={() => navigate(-1)}
+              >
                 <SvgArrowLeft
                   width={10}
                   height={10}
@@ -333,21 +313,66 @@ export function Titlebar({ style }: TitlebarProps) {
             ) : null
           }
         />
-
-        <Route path="/accounts/:id" element={<AccountSyncCheck />} />
-
-        <Route path="/budget" element={<BudgetTitlebar />} />
       </Routes>
+
+      <View
+        role="heading"
+        aria-level={1}
+        data-testid="page-title"
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          fontSize: 22,
+          fontWeight: 700,
+          color: theme.pageText,
+          whiteSpace: 'nowrap',
+          minWidth: 0,
+        }}
+      >
+        {title}
+      </View>
+
+      <View style={{ marginLeft: 16, flexDirection: 'row' }}>
+        <Routes>
+          <Route path="/accounts/:id" element={<AccountSyncCheck />} />
+          <Route path="/budget" element={<BudgetTitlebar />} />
+          <Route path="*" element={null} />
+        </Routes>
+      </View>
+
       <View style={{ flex: 1 }} />
-      <SpaceBetween gap={10}>
+      <SpaceBetween
+        gap={8}
+        wrap={false}
+        style={{
+          WebkitAppRegion: 'no-drag',
+          '& > button, & > * > button': {
+            minWidth: 34,
+            height: 34,
+            justifyContent: 'center',
+            borderRadius: 8,
+            border: `1px solid ${theme.tableBorder}`,
+            backgroundColor: theme.cardBackground,
+          },
+        }}
+      >
         <UncategorizedButton />
         {isDevelopmentEnvironment() && !isTestEnv && <ThemeSelector />}
         <PrivacyButton />
         <NotificationsButton />
         {serverURL ? <ServerSyncButton /> : null}
         <SharedArrayBufferWarning />
-        <LoggedInUser />
         <HelpMenu />
+        <Tooltip placement="bottom end" content={<Trans>Settings</Trans>}>
+          <Button
+            variant="bare"
+            aria-label={t('Settings')}
+            onPress={() => navigate('/settings')}
+          >
+            <SfIcon name="settings" width={17} height={17} />
+          </Button>
+        </Tooltip>
+        <LoggedInUser />
       </SpaceBetween>
     </View>
   );

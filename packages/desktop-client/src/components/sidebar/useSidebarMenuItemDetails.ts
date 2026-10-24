@@ -27,9 +27,9 @@ export function useSidebarMenuItemDetails(): Record<
   const { t } = useTranslation();
 
   return {
-    budget: { title: t('Budget'), Icon: SvgWallet },
+    budget: { title: t('Spending Plan'), Icon: SvgWallet },
     reports: { title: t('Reports'), Icon: SvgReports },
-    schedules: { title: t('Schedules'), Icon: SvgCalendar3 },
+    schedules: { title: t('Bills & Income'), Icon: SvgCalendar3 },
     payees: { title: t('Payees'), Icon: SvgUserGroup },
     tags: { title: t('Tags'), Icon: SvgTag },
     rules: { title: t('Rules'), Icon: SvgTuning },

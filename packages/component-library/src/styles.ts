@@ -66,9 +66,9 @@ export const styles: CSSProperties = {
     '@media (max-height: 550px)': {
       minHeight: 700, // ensure we can scroll on small screens
     },
-    paddingTop: 8, // height of the titlebar
+    paddingTop: 8,
     [`@media (min-width: ${tokens.breakpoint_small})`]: {
-      paddingTop: 36,
+      paddingTop: 20,
     },
   },
   pageContent: {

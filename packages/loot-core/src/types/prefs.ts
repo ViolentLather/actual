@@ -121,8 +121,14 @@ export type LocalPrefs = Partial<{
   'bankSync.lastAutomaticRun': number;
 }>;
 
-export type Theme = 'light' | 'dark' | 'auto' | 'midnight' | string;
-export type DarkTheme = 'dark' | 'midnight';
+export type Theme =
+  | 'light'
+  | 'dark'
+  | 'auto'
+  | 'midnight'
+  | 'simplifi'
+  | string;
+export type DarkTheme = 'dark' | 'midnight' | 'simplifi';
 
 // GlobalPrefs are the parsed global-store.json values
 export type GlobalPrefs = Partial<{
@@ -140,7 +146,7 @@ export type GlobalPrefs = Partial<{
       id: string;
       displayName: string;
       description?: string;
-      baseTheme?: 'light' | 'dark' | 'midnight';
+      baseTheme?: 'light' | 'dark' | 'midnight' | 'simplifi';
       colors: Record<string, string>;
     }
   >; // Complete plugin theme metadata
