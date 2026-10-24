@@ -1606,6 +1606,23 @@ class AccountInternal extends PureComponent<
     }
   };
 
+  onToggleQuickFilter = (condition: Partial<RuleConditionEntity>) => {
+    const isActive = this.state.filterConditions.some(
+      existing =>
+        !isTransactionFilterEntity(existing) &&
+        existing.customName === condition.customName,
+    );
+    void this.applyFilters(
+      isActive
+        ? this.state.filterConditions.filter(
+            existing =>
+              isTransactionFilterEntity(existing) ||
+              existing.customName !== condition.customName,
+          )
+        : [...this.state.filterConditions, condition],
+    );
+  };
+
   onTransactionTabChange = (tab: TransactionTab) => {
     const otherConditions = this.state.filterConditions.filter(
       condition => !isTransactionTabCondition(condition),
@@ -1906,6 +1923,7 @@ class AccountInternal extends PureComponent<
                 style={{ paddingLeft: 24, marginBottom: 16 }}
               />
               <AccountHeader
+                onToggleQuickFilter={this.onToggleQuickFilter}
                 overview={
                   accountId === 'uncategorized' ? null : (
                     <AccountOverview account={account} />

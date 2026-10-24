@@ -63,7 +63,8 @@ export function SfBarChart({
             tick={{ fill: theme.pageTextLight, fontSize: 12 }}
             tickLine={false}
             axisLine={false}
-            interval={0}
+            // Show every label when there is room, otherwise every other one.
+            interval={width / Math.max(data.length, 1) < 44 ? 1 : 0}
           />
           <YAxis
             tickFormatter={formatAmount}

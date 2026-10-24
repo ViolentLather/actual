@@ -10,10 +10,12 @@ export function StartPageRedirect() {
   const { startPath } = useSidebarMenu();
   const [startPagePref] = useSyncedPref('sidebar-start-page');
 
-  if (isNarrowWidth) {
-    return <Navigate to="/budget" replace />;
-  }
-
-  // Open on the dashboard unless a start page was explicitly chosen.
-  return <Navigate to={startPagePref ? startPath : '/dashboard'} replace />;
+  // Open on the dashboard unless a start page was explicitly chosen (on
+  // desktop; the sidebar start page setting isn't available on mobile).
+  return (
+    <Navigate
+      to={!isNarrowWidth && startPagePref ? startPath : '/dashboard'}
+      replace
+    />
+  );
 }

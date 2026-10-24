@@ -43,6 +43,7 @@ import { FiltersStack } from '#components/filters/FiltersStack';
 import type { SavedFilter } from '#components/filters/SavedFilterMenuButton';
 import { NotesButton } from '#components/NotesButton';
 import { AccountSubtitle } from '#components/simplifi/accounts/AccountSubtitle';
+import { QuickFilterBar } from '#components/simplifi/accounts/QuickFilterBar';
 import { CARD_RADIUS } from '#components/simplifi/layout';
 import { SfIcon } from '#components/simplifi/SfIcon';
 import { SelectedTransactionsButton } from '#components/transactions/SelectedTransactionsButton';
@@ -76,6 +77,7 @@ type AccountHeaderProps = {
   showEmptyMessage: boolean;
   /** Rendered between the account summary and the transactions toolbar. */
   overview?: ReactNode;
+  onToggleQuickFilter?: (condition: Partial<RuleConditionEntity>) => void;
   balanceQuery: ComponentProps<typeof ReconcilingMessage>['balanceQuery'];
   reconcileAmount?: number | null;
   isFiltered: boolean;
@@ -149,6 +151,7 @@ export function AccountHeader({
   showReconciled,
   showEmptyMessage,
   overview,
+  onToggleQuickFilter,
   balanceQuery,
   reconcileAmount,
   isFiltered,
@@ -624,6 +627,12 @@ export function AccountHeader({
               </View>
             )}
           </SpaceBetween>
+          {onToggleQuickFilter && (
+            <QuickFilterBar
+              conditions={filterConditions ?? []}
+              onToggle={onToggleQuickFilter}
+            />
+          )}
           {filterConditions?.length > 0 && (
             <FiltersStack
               conditions={filterConditions}

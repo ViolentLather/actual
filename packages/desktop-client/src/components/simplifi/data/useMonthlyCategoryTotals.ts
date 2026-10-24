@@ -3,6 +3,8 @@ import { q } from '@actual-app/core/shared/query';
 
 import { useQuery } from '#hooks/useQuery';
 
+import { notExcludedFilter } from './exclusion';
+
 export type MonthlyCategoryTotal = {
   month: string;
   category: string | null;
@@ -10,10 +12,16 @@ export type MonthlyCategoryTotal = {
 };
 
 /**
- * Live per-month, per-category totals of on-budget transactions between two
- * months (inclusive), excluding transfers between accounts.
+ * Live per-month, per-category totals of transactions between two
+ * months (inclusive), excluding transfers between accounts and
+ * transactions tagged to be left out of reports.
  */
-export function useMonthlyCategoryTotals(startMonth: string, endMonth: string) {
+export function useMonthlyCategoryTotals(
+  startMonth: string,
+  endMonth: string,
+  accountIds: string[] | null = null,
+) {
+  const accountKey = accountIds ? accountIds.join(',') : '';
   const start = monthUtils.firstDayOfMonth(startMonth);
   const end = monthUtils.lastDayOfMonth(endMonth);
 
@@ -21,9 +29,17 @@ export function useMonthlyCategoryTotals(startMonth: string, endMonth: string) {
     () =>
       q('transactions')
         .filter({
-          'account.offbudget': false,
+          // Without an account filter, stick to on-budget accounts like
+          // Actual's own reports; an explicit selection is used as is.
+          ...(accountKey
+            ? { account: { $oneof: accountKey.split(',') } }
+            : { 'account.offbudget': false }),
           'payee.transfer_acct': null,
-          $and: [{ date: { $gte: start } }, { date: { $lte: end } }],
+          $and: [
+            { date: { $gte: start } },
+            { date: { $lte: end } },
+            notExcludedFilter,
+          ],
         })
         .groupBy([{ $month: '$date' }, 'category'])
         .select([
@@ -31,6 +47,6 @@ export function useMonthlyCategoryTotals(startMonth: string, endMonth: string) {
           'category',
           { amount: { $sum: '$amount' } },
         ]),
-    [start, end],
+    [start, end, accountKey],
   );
 }

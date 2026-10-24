@@ -11,6 +11,7 @@ import { EditableBudgetName } from '#components/sidebar/BudgetName';
 import { getSidebarMenuItemPath } from '#components/sidebar/sidebarMenu';
 import { useSidebarMenuItemDetails } from '#components/sidebar/useSidebarMenuItemDetails';
 import { useSidebarMenu } from '#hooks/useSidebarMenu';
+import { useSyncedPref } from '#hooks/useSyncedPref';
 import { useSyncStatus } from '#hooks/useSyncStatus';
 import { useDispatch } from '#redux';
 
@@ -40,7 +41,14 @@ export function AppRail() {
     setIsExpanded(true);
   };
 
-  const sections = getPrimaryRailItems(t);
+  const [showSpendingPlanPref] = useSyncedPref('simplifi.show-spending-plan');
+  const sections = getPrimaryRailItems(t)
+    .map(section =>
+      section.filter(
+        item => item.id !== 'budget' || showSpendingPlanPref === 'true',
+      ),
+    )
+    .filter(section => section.length > 0);
   const extraItems = sidebarItems.filter(
     item => getExtraRailIcon(item.id) != null,
   );

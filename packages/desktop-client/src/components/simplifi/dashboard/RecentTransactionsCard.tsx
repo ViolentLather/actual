@@ -7,6 +7,7 @@ import { View } from '@actual-app/components/view';
 import * as monthUtils from '@actual-app/core/shared/months';
 
 import { Link } from '#components/common/Link';
+import { isExcludedFromReports } from '#components/simplifi/data/exclusion';
 import { useRecentTransactions } from '#components/simplifi/data/useRecentTransactions';
 import { SfAmount } from '#components/simplifi/ui/SfAmount';
 import { SfCard } from '#components/simplifi/ui/SfCard';
@@ -26,7 +27,8 @@ export function RecentTransactionsCard() {
       trans =>
         trans.date >= weekStart &&
         trans.amount < 0 &&
-        !trans.transferAccountName,
+        !trans.transferAccountName &&
+        !isExcludedFromReports(trans.notes),
     )
     .reduce((sum, trans) => sum - trans.amount, 0);
 

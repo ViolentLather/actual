@@ -10,6 +10,7 @@ import { SfAmount } from '#components/simplifi/ui/SfAmount';
 import { SfChange } from '#components/simplifi/ui/SfChange';
 
 import { NetWorthAccountGroup } from './NetWorthAccountGroup';
+import { netWorthRowClassName } from './netWorthRowStyle';
 
 type NetWorthSideSectionProps = {
   title: string;
@@ -36,11 +37,8 @@ export function NetWorthSideSection({
         variant="bare"
         aria-expanded={isOpen}
         onPress={() => setIsOpen(!isOpen)}
+        className={netWorthRowClassName}
         style={{
-          display: 'grid',
-          gridTemplateColumns: '20px minmax(0, 1.2fr) minmax(0, 1.5fr) auto',
-          alignItems: 'center',
-          gap: 12,
           padding: '16px',
           borderRadius: 0,
           width: '100%',
@@ -53,12 +51,14 @@ export function NetWorthSideSection({
           height={14}
         />
         <View style={{ fontSize: 16, fontWeight: 700 }}>{title}</View>
-        <SfChange
-          change={side.change}
-          base={side.balance - side.change}
-          label={changeLabel}
-          size="small"
-        />
+        <View className="nw-change">
+          <SfChange
+            change={side.change}
+            base={side.balance - side.change}
+            label={changeLabel}
+            size="small"
+          />
+        </View>
         <SfAmount value={side.balance} style={{ fontWeight: 700 }} />
       </Button>
       {isOpen && (

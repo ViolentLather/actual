@@ -5,12 +5,15 @@ import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 import * as monthUtils from '@actual-app/core/shared/months';
 
+import { Page } from '#components/Page';
 import {
   buildGroupSpending,
   flattenToCategories,
 } from '#components/simplifi/data/cashFlow';
 import { useCashFlowData } from '#components/simplifi/data/useCashFlowData';
-import { CARD_GAP } from '#components/simplifi/layout';
+import { CARD_GAP, PAGE_BOTTOM_PADDING } from '#components/simplifi/layout';
+import { TransferSuggestionsCard } from '#components/simplifi/transfers/TransferSuggestionsCard';
+import { UncategorizedBanner } from '#components/simplifi/ui/UncategorizedBanner';
 import { useSelector } from '#redux';
 
 import { BillsCard } from './BillsCard';
@@ -41,48 +44,52 @@ export function Dashboard() {
     : t('Hello!');
 
   return (
-    <View
-      role="main"
-      data-testid="dashboard-page"
-      style={{ padding: '20px 24px 32px', gap: CARD_GAP, flexShrink: 0 }}
-    >
-      <Text style={{ fontSize: 18, fontWeight: 700, color: theme.pageText }}>
-        {greeting} <span aria-hidden="true">👋</span>
-      </Text>
-
+    <Page header={t('Dashboard')}>
       <View
-        style={{
-          display: 'grid',
-          gap: CARD_GAP,
-          gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-          '@media (max-width: 1350px)': {
-            gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-          },
-          '& > .span-2': { gridColumn: 'span 2' },
-          '@media (max-width: 900px)': {
-            gridTemplateColumns: 'minmax(0, 1fr)',
-            '& > .span-2': { gridColumn: 'span 1' },
-          },
-        }}
+        data-testid="dashboard-page"
+        style={{ gap: CARD_GAP, flexShrink: 0, ...PAGE_BOTTOM_PADDING }}
       >
-        <View className="span-2">
-          <NetWorthCard />
+        <Text style={{ fontSize: 18, fontWeight: 700, color: theme.pageText }}>
+          {greeting} <span aria-hidden="true">👋</span>
+        </Text>
+
+        <UncategorizedBanner />
+        <TransferSuggestionsCard />
+
+        <View
+          style={{
+            display: 'grid',
+            gap: CARD_GAP,
+            gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+            '@media (max-width: 1350px)': {
+              gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+            },
+            '& > .span-2': { gridColumn: 'span 2' },
+            '@media (max-width: 900px)': {
+              gridTemplateColumns: 'minmax(0, 1fr)',
+              '& > .span-2': { gridColumn: 'span 1' },
+            },
+          }}
+        >
+          <View className="span-2">
+            <NetWorthCard />
+          </View>
+          <RecentTransactionsCard />
+          <CashFlowBarsCard
+            kind="income"
+            monthly={cashFlow.monthly}
+            color={theme.reportsGreen}
+          />
+          <CashFlowBarsCard
+            kind="spending"
+            monthly={cashFlow.monthly}
+            color={theme.reportsBlue}
+          />
+          <BillsCard />
+          <TopCategoriesCard groups={categorySpending} />
+          <ThisMonthCard month={cashFlow.monthly.at(-1)} />
         </View>
-        <RecentTransactionsCard />
-        <CashFlowBarsCard
-          kind="income"
-          monthly={cashFlow.monthly}
-          color={theme.reportsGreen}
-        />
-        <CashFlowBarsCard
-          kind="spending"
-          monthly={cashFlow.monthly}
-          color={theme.reportsBlue}
-        />
-        <BillsCard />
-        <TopCategoriesCard groups={categorySpending} />
-        <ThisMonthCard month={cashFlow.monthly.at(-1)} />
       </View>
-    </View>
+    </Page>
   );
 }

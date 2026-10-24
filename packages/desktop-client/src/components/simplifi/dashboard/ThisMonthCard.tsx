@@ -30,7 +30,7 @@ export function ThisMonthCard({ month }: ThisMonthCardProps) {
   return (
     <SfCard
       testId="dashboard-this-month"
-      title={t('Spending Plan')}
+      title={t('Cash Flow')}
       subtitle={t('This Month')}
     >
       <View style={{ gap: 14 }}>
