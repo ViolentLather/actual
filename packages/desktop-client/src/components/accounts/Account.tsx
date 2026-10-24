@@ -12,6 +12,7 @@ import { Navigate, useLocation, useParams } from 'react-router';
 
 import { styles } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
+import { tokens } from '@actual-app/components/tokens';
 import { View } from '@actual-app/components/view';
 import { listen, send } from '@actual-app/core/platform/client/connection';
 import * as undo from '@actual-app/core/platform/client/undo';
@@ -49,6 +50,15 @@ import { markAccountRead } from '#accounts/accountsSlice';
 import * as reconciliation from '#accounts/reconciliation';
 import { FeatureErrorFallback } from '#components/FeatureErrorFallback';
 import type { SavedFilter } from '#components/filters/SavedFilterMenuButton';
+import { AccountOverview } from '#components/simplifi/accounts/AccountOverview';
+import {
+  getActiveTransactionTab,
+  isTransactionTabCondition,
+  makeTransactionTabCondition,
+} from '#components/simplifi/data/transactionTabs';
+import type { TransactionTab } from '#components/simplifi/data/transactionTabs';
+import { CARD_RADIUS } from '#components/simplifi/layout';
+import { SfTabs } from '#components/simplifi/ui/SfTabs';
 import type {
   TransactionTableColumn,
   TransactionTableColumnId,
@@ -1596,6 +1606,17 @@ class AccountInternal extends PureComponent<
     }
   };
 
+  onTransactionTabChange = (tab: TransactionTab) => {
+    const otherConditions = this.state.filterConditions.filter(
+      condition => !isTransactionTabCondition(condition),
+    );
+    void this.applyFilters(
+      tab === 'all'
+        ? otherConditions
+        : [...otherConditions, makeTransactionTabCondition(tab)],
+    );
+  };
+
   applyFilters = async (conditions: ConditionEntity[]) => {
     if (conditions.length > 0) {
       const filteredCustomQueryFilters: Partial<RuleConditionEntity>[] =
@@ -1864,8 +1885,32 @@ class AccountInternal extends PureComponent<
             registerDispatch={dispatch => (this.dispatchSelected = dispatch)}
             selectAllFilter={selectAllFilter}
           >
-            <View style={styles.page}>
+            <View
+              style={{
+                ...styles.page,
+                paddingTop: 0,
+                [`@media (min-width: ${tokens.breakpoint_small})`]: {
+                  paddingTop: 0,
+                },
+              }}
+            >
+              <SfTabs
+                ariaLabel={t('Transaction type')}
+                value={getActiveTransactionTab(this.state.filterConditions)}
+                onChange={this.onTransactionTabChange}
+                tabs={[
+                  { value: 'all', label: t('All') },
+                  { value: 'spending', label: t('Spending') },
+                  { value: 'income', label: t('Income') },
+                ]}
+                style={{ paddingLeft: 24, marginBottom: 16 }}
+              />
               <AccountHeader
+                overview={
+                  accountId === 'uncategorized' ? null : (
+                    <AccountOverview account={account} />
+                  )
+                }
                 tableRef={this.table}
                 isNameEditable={isNameEditable ?? false}
                 workingHard={workingHard ?? false}
@@ -1923,7 +1968,18 @@ class AccountInternal extends PureComponent<
                 onMergeTransactions={this.onMergeTransactions}
               />
 
-              <View style={{ flex: 1 }}>
+              <View
+                style={{
+                  flex: 1,
+                  margin: '0 24px 20px',
+                  minHeight: 260,
+                  overflow: 'hidden',
+                  backgroundColor: theme.tableBackground,
+                  border: `1px solid ${theme.tableBorder}`,
+                  borderTop: 'none',
+                  borderRadius: `0 0 ${CARD_RADIUS}px ${CARD_RADIUS}px`,
+                }}
+              >
                 <TransactionList
                   headerContent={undefined}
                   // @ts-expect-error - fix me

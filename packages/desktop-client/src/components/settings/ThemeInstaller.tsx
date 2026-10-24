@@ -100,7 +100,7 @@ export function ThemeInstaller({
       id: string;
       errorMessage: string;
       catalogTheme?: CatalogTheme | null;
-      baseTheme?: 'light' | 'dark' | 'midnight';
+      baseTheme?: 'light' | 'dark' | 'midnight' | 'simplifi';
     }) => {
       setError(null);
       setErroringTheme(null);

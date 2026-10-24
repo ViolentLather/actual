@@ -5,6 +5,7 @@ import lightThemeCss from '@actual-app/components/themes/light.css?inline';
 import midnightThemeCss from '@actual-app/components/themes/midnight.css?inline';
 import paletteCss from '@actual-app/components/themes/palette.css?inline';
 import sidebarRedesignLightCss from '@actual-app/components/themes/sidebar-redesign-light.css?inline';
+import simplifiThemeCss from '@actual-app/components/themes/simplifi.css?inline';
 import type { DarkTheme, Theme } from '@actual-app/core/types/prefs';
 
 import { useGlobalPref } from '#hooks/useGlobalPref';
@@ -21,6 +22,7 @@ const themes = {
   light: { name: 'Light', colors: lightThemeCss },
   dark: { name: 'Dark', colors: darkThemeCss },
   midnight: { name: 'Midnight', colors: midnightThemeCss },
+  simplifi: { name: 'Simplifi', colors: simplifiThemeCss },
   auto: { name: 'System default' },
 } as const;
 
@@ -31,15 +33,16 @@ export const themeOptions = Object.entries(themes).map(
 export const darkThemeOptions = Object.entries({
   dark: themes.dark,
   midnight: themes.midnight,
+  simplifi: themes.simplifi,
 }).map(([key, { name }]) => [key, name] as [DarkTheme, string]);
 
 export function useTheme() {
-  const [theme = 'auto', setThemePref] = useGlobalPref('theme');
+  const [theme = 'simplifi', setThemePref] = useGlobalPref('theme');
   return [theme, setThemePref] as const;
 }
 
 export function usePreferredDarkTheme() {
-  const [darkTheme = 'dark', setDarkTheme] =
+  const [darkTheme = 'simplifi', setDarkTheme] =
     useGlobalPref('preferredDarkTheme');
   return [darkTheme, setDarkTheme] as const;
 }

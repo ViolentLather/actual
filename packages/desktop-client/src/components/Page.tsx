@@ -8,6 +8,8 @@ import { Text } from '@actual-app/components/text';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 
+import { useRegisterPageTitle } from './simplifi/PageTitleContext';
+
 const HEADER_HEIGHT = 50;
 
 type PageHeaderProps = {
@@ -163,13 +165,17 @@ type PageProps = {
 export function Page({ header, style, padding, children, footer }: PageProps) {
   const { isNarrowWidth } = useResponsive();
   const mobileHeaderSlot = useContext(MobilePageHeaderSlotContext);
-  const childrenPadding = padding != null ? padding : isNarrowWidth ? 10 : 20;
+  const childrenPadding = padding != null ? padding : isNarrowWidth ? 10 : 24;
+  // On desktop, plain-text titles are shown in the app header.
+  const hasAppHeaderTitle = useRegisterPageTitle(
+    !isNarrowWidth && typeof header === 'string' ? header : null,
+  );
 
   const headerToRender =
     typeof header === 'string' ? (
       isNarrowWidth ? (
         <MobilePageHeader title={header} />
-      ) : (
+      ) : hasAppHeaderTitle ? null : (
         <PageHeader title={header} />
       )
     ) : (

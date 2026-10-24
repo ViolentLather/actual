@@ -195,13 +195,16 @@ async function loadGlobalPrefs(): Promise<GlobalPrefs> {
       theme === 'light' ||
       theme === 'dark' ||
       theme === 'auto' ||
-      theme === 'midnight'
+      theme === 'midnight' ||
+      theme === 'simplifi'
         ? theme
-        : 'auto',
+        : 'simplifi',
     preferredDarkTheme:
-      preferredDarkTheme === 'dark' || preferredDarkTheme === 'midnight'
+      preferredDarkTheme === 'dark' ||
+      preferredDarkTheme === 'midnight' ||
+      preferredDarkTheme === 'simplifi'
         ? preferredDarkTheme
-        : 'dark',
+        : 'simplifi',
     installedCustomLightTheme: installedCustomLightTheme || undefined,
     installedCustomDarkTheme: installedCustomDarkTheme || undefined,
     customCssOverride: customCssOverride || undefined,

@@ -73,8 +73,9 @@ export function ReportCard({
       ref={setCardElement}
       style={{
         backgroundColor: theme.tableBackground,
-        borderBottomLeftRadius: 2,
-        borderBottomRightRadius: 2,
+        border: `1px solid ${theme.tableBorder}`,
+        borderRadius: 10,
+        overflow: 'hidden',
         width: '100%',
         height: '100%',
         boxShadow: '0 2px 6px rgba(0, 0, 0, .15)',

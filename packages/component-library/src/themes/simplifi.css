@@ -1,0 +1,325 @@
+/* Simplifi-inspired theme: charcoal surfaces with an indigo-violet accent. */
+:root {
+  /* Simplifi-inspired palette */
+  --sf-bg: #1d1f24;
+  --sf-rail: #1a1b20;
+  --sf-surface: #24262c;
+  --sf-surface-raised: #2b2d34;
+  --sf-surface-hover: #30333a;
+  --sf-surface-sunken: #1f2126;
+  --sf-border: #34373e;
+  --sf-border-strong: #44474f;
+  --sf-text: #ededf0;
+  --sf-text-secondary: #c3c5cc;
+  --sf-text-muted: #8d909a;
+  --sf-text-faint: #5f626b;
+  --sf-primary: #4f2cf0;
+  --sf-primary-strong: #3f1fe0;
+  --sf-primary-soft: #9d8bff;
+  --sf-primary-button: #9a86f8;
+  --sf-primary-button-hover: #ab9afa;
+  --sf-primary-tint: rgba(110, 86, 247, 0.18);
+  --sf-primary-tint-strong: rgba(110, 86, 247, 0.32);
+  --sf-primary-deep: #1f1660;
+  --sf-green: #3dcd7d;
+  --sf-green-tint: rgba(61, 205, 125, 0.16);
+  --sf-red: #f3596b;
+  --sf-red-tint: rgba(243, 89, 107, 0.16);
+  --sf-orange: #f5874f;
+  --sf-yellow: #f1cc2e;
+  --sf-cyan: #72e3f6;
+  --sf-pink: #c45ae0;
+
+  --color-pageBackground: var(--sf-bg);
+  --color-pageBackgroundModalActive: var(--sf-rail);
+  --color-pageBackgroundTopLeft: var(--sf-rail);
+  --color-pageBackgroundBottomRight: var(--sf-bg);
+  --color-pageBackgroundLineTop: var(--sf-primary);
+  --color-pageBackgroundLineMid: var(--sf-rail);
+  --color-pageBackgroundLineBottom: var(--sf-border);
+  --color-pageText: var(--sf-text);
+  --color-pageTextLight: var(--sf-text-secondary);
+  --color-pageTextSubdued: var(--sf-text-muted);
+  --color-pageTextDark: var(--sf-text);
+  --color-pageTextPositive: var(--sf-primary-soft);
+  --color-pageTextLink: var(--sf-primary-soft);
+  --color-pageTextLinkLight: var(--sf-primary-soft);
+
+  --color-cardBackground: var(--sf-surface);
+  --color-cardBorder: var(--sf-border);
+  --color-cardShadow: rgba(0, 0, 0, 0.35);
+
+  --color-tableBackground: var(--sf-surface);
+  --color-tableRowBackgroundAlternate: var(--color-tableBackground);
+  --color-tableRowBackgroundHover: var(--sf-surface-hover);
+  --color-tableText: var(--sf-text);
+  --color-tableTextItemAdded: var(--color-tableText);
+  --color-tableTextLight: var(--color-tableText);
+  --color-tableTextSubdued: var(--sf-text-muted);
+  --color-tableTextSelected: var(--sf-text);
+  --color-tableTextHover: var(--sf-text-secondary);
+  --color-tableTextInactive: var(--sf-text-muted);
+  --color-tableHeaderText: var(--sf-text);
+  --color-tableHeaderBackground: var(--sf-surface);
+  --color-tableBorder: var(--sf-border);
+  --color-tableBorderSelected: var(--sf-primary-soft);
+  --color-tableBorderHover: var(--sf-primary-soft);
+  --color-tableBorderSeparator: var(--sf-border-strong);
+  --color-tableRowBackgroundHighlight: var(--sf-primary-tint-strong);
+  --color-tableRowBackgroundHighlightText: var(--sf-text);
+  --color-tableRowHeaderBackground: var(--sf-surface-sunken);
+  --color-tableRowHeaderText: var(--sf-text);
+
+  --color-numberPositive: var(--sf-green);
+  --color-numberNegative: var(--sf-red);
+  --color-numberNeutral: var(--sf-text-muted);
+  --color-budgetNumberNegative: var(--color-numberNegative);
+  --color-budgetNumberZero: var(--color-tableTextSubdued);
+  --color-budgetNumberNeutral: var(--color-tableText);
+  --color-budgetNumberPositive: var(--color-budgetNumberNeutral);
+  --color-templateNumberFunded: var(--color-numberPositive);
+  --color-templateNumberUnderFunded: var(--sf-orange);
+  --color-toBudgetPositive: var(--color-numberPositive);
+  --color-toBudgetZero: var(--color-numberPositive);
+  --color-toBudgetNegative: var(--color-budgetNumberNegative);
+
+  --color-sidebarBackground: var(--sf-rail);
+  --color-sidebarItemBackgroundPending: var(--palette-orange200);
+  --color-sidebarItemBackgroundPositive: var(--sf-green);
+  --color-sidebarItemBackgroundFailed: var(--sf-red);
+  --color-sidebarItemAccentSelected: var(--sf-primary-soft);
+  --color-sidebarItemBackgroundHover: var(--sf-surface-hover);
+  --color-sidebarItemBackgroundSelected: color-mix(
+    in srgb,
+    var(--color-sidebarItemAccentSelected) 35%,
+    transparent
+  );
+  --color-sidebarItemText: var(--sf-text);
+  --color-sidebarItemTextUpdated: var(--color-sidebarItemText);
+  --color-sidebarItemTextSelected: var(--sf-primary-soft);
+  --color-sidebarBudgetName: var(--sf-text-secondary);
+  --color-sidebarHeaderText: var(--sf-text);
+  --color-sidebarTextSubdued: var(--sf-text-secondary);
+  --color-sidebarTextMuted: var(--sf-text-muted);
+  --color-sidebarTextPositive: var(--color-sidebarItemBackgroundPositive);
+  --color-sidebarTextFailed: var(--color-sidebarItemBackgroundFailed);
+  --color-sidebarBackgroundFailedSubtle: color-mix(
+    in srgb,
+    var(--color-sidebarItemBackgroundFailed) 16%,
+    transparent
+  );
+  --color-sidebarBorder: var(--sf-border);
+  --color-sidebarControlBackground: var(--color-sidebarItemBackgroundHover);
+  --color-sidebarBrand: var(--color-sidebarItemAccentSelected);
+
+  --color-settingsCardBackground: var(--color-tableBackground);
+  --color-settingsCardBorder: var(--color-tableBorder);
+  --color-settingsCardText: var(--color-tableText);
+  --color-settingsCardTextSubdued: var(--sf-text-secondary);
+  --color-settingsNavItemText: var(--color-pageText);
+  --color-settingsNavItemBackgroundHover: color-mix(
+    in srgb,
+    var(--color-settingsNavItemText) 8%,
+    transparent
+  );
+  --color-settingsNavItemAccentSelected: var(--sf-primary-soft);
+  --color-settingsNavItemTextSelected: var(
+    --color-settingsNavItemAccentSelected
+  );
+  --color-settingsNavItemBackgroundSelected: color-mix(
+    in srgb,
+    var(--color-settingsNavItemAccentSelected) 22%,
+    transparent
+  );
+
+  --color-menuBackground: var(--sf-surface-raised);
+  --color-menuItemBackground: var(--sf-surface-raised);
+  --color-menuItemBackgroundHover: var(--sf-surface-hover);
+  --color-menuItemText: var(--sf-text);
+  --color-menuItemTextHover: var(--sf-text);
+  --color-menuItemTextSelected: var(--sf-primary-soft);
+  --color-menuItemTextHeader: var(--sf-primary-soft);
+  --color-menuBorder: var(--sf-border);
+  --color-menuBorderHover: var(--sf-primary-soft);
+  --color-menuKeybindingText: var(--sf-text-muted);
+  --color-menuAutoCompleteBackground: var(--sf-surface-raised);
+  --color-menuAutoCompleteBackgroundHover: var(--sf-surface-hover);
+  --color-menuAutoCompleteText: var(--sf-text);
+  --color-menuAutoCompleteTextHover: var(--sf-green);
+  --color-menuAutoCompleteTextHeader: var(--sf-primary-soft);
+  --color-menuAutoCompleteItemTextHover: var(--sf-text);
+  --color-menuAutoCompleteItemText: var(--color-menuItemText);
+  --color-modalBackground: var(--sf-surface);
+  --color-modalBorder: var(--sf-border);
+  --color-mobileHeaderBackground: var(--sf-rail);
+  --color-mobileHeaderText: var(--sf-text);
+  --color-mobileHeaderTextSubdued: var(--sf-text-muted);
+  --color-mobileHeaderTextHover: rgba(200, 200, 200, 0.15);
+  --color-mobilePageBackground: var(--sf-bg);
+  --color-mobileNavBackground: var(--sf-rail);
+  --color-mobileNavItem: var(--sf-text-muted);
+  --color-mobileNavItemSelected: var(--sf-primary-soft);
+  --color-mobileAccountShadow: var(--color-cardShadow);
+  --color-mobileAccountText: var(--sf-primary-soft);
+  --color-mobileTransactionSelected: var(--sf-primary-soft);
+
+  --color-mobileViewTheme: var(--color-mobileHeaderBackground);
+  --color-mobileConfigServerViewTheme: var(--sf-primary);
+
+  --color-markdownNormal: var(--palette-purple700);
+  --color-markdownDark: var(--palette-purple500);
+  --color-markdownLight: var(--palette-purple800);
+
+  --color-buttonMenuText: var(--sf-text);
+  --color-buttonMenuTextHover: var(--color-buttonMenuText);
+  --color-buttonMenuBackground: var(--sf-surface-raised);
+  --color-buttonMenuBackgroundHover: var(--sf-surface-hover);
+  --color-buttonMenuBorder: var(--sf-border);
+  --color-buttonMenuSelectedText: var(--palette-green800);
+  --color-buttonMenuSelectedTextHover: var(--palette-orange800);
+  --color-buttonMenuSelectedBackground: var(--palette-orange200);
+  --color-buttonMenuSelectedBackgroundHover: var(--palette-gray300);
+  --color-buttonMenuSelectedBorder: var(--color-buttonMenuSelectedBackground);
+
+  --color-buttonPrimaryText: #ffffff;
+  --color-buttonPrimaryTextHover: var(--color-buttonPrimaryText);
+  --color-buttonPrimaryBackground: var(--sf-primary-button);
+  --color-buttonPrimaryBackgroundHover: var(--sf-primary-button-hover);
+  --color-buttonPrimaryBorder: var(--color-buttonPrimaryBackground);
+  --color-buttonPrimaryShadow: rgba(0, 0, 0, 0.4);
+  --color-buttonPrimaryDisabledText: var(--sf-text-muted);
+  --color-buttonPrimaryDisabledBackground: var(--sf-surface-raised);
+  --color-buttonPrimaryDisabledBorder: var(
+    --color-buttonPrimaryDisabledBackground
+  );
+
+  --color-buttonNormalText: var(--sf-text);
+  --color-buttonNormalTextHover: var(--sf-text);
+  --color-buttonNormalBackground: var(--sf-surface);
+  --color-buttonNormalBackgroundHover: var(--sf-surface-hover);
+  --color-buttonNormalBorder: var(--sf-border-strong);
+  --color-buttonNormalShadow: rgba(0, 0, 0, 0.3);
+  --color-buttonNormalSelectedText: #ffffff;
+  --color-buttonNormalSelectedBackground: var(--sf-primary);
+  --color-buttonNormalDisabledText: var(--sf-text-faint);
+  --color-buttonNormalDisabledBackground: var(--sf-surface-sunken);
+  --color-buttonNormalDisabledBorder: var(--sf-border);
+
+  --color-calendarText: var(--sf-text);
+  --color-calendarBackground: var(--sf-surface-raised);
+  --color-calendarItemText: var(--sf-text);
+  --color-calendarItemBackground: var(--sf-surface-hover);
+  --color-calendarSelectedBackground: var(
+    --color-buttonNormalSelectedBackground
+  );
+  --color-datePickerRangeBackground: var(--sf-primary-tint-strong);
+
+  --color-buttonBareText: var(--color-pageText);
+  --color-buttonBareTextHover: var(--color-pageText);
+  --color-buttonBareDisabledText: var(--color-pageTextSubdued);
+  --color-buttonBareBackground: transparent;
+  --color-buttonBareDisabledBackground: var(--color-buttonBareBackground);
+  --color-buttonBareBackgroundHover: rgba(255, 255, 255, 0.08);
+  --color-buttonBareBackgroundActive: rgba(255, 255, 255, 0.14);
+
+  --color-noticeBackground: var(--sf-green-tint);
+  --color-noticeBackgroundLight: var(--palette-green900);
+  --color-noticeBackgroundDark: var(--palette-green400);
+  --color-noticeText: var(--sf-green);
+  --color-noticeTextLight: var(--sf-green);
+  --color-noticeTextDark: var(--palette-green150);
+  --color-noticeTextMenu: var(--palette-green400);
+  --color-noticeTextMenuHover: var(--palette-green700);
+  --color-noticeBorder: var(--sf-green);
+  --color-warningBackground: #3a2a18;
+  --color-warningText: var(--sf-orange);
+  --color-warningTextLight: var(--palette-orange500);
+  --color-warningTextDark: var(--palette-orange100);
+  --color-warningBorder: var(--sf-orange);
+  --color-errorBackground: #3a1f1c;
+  --color-errorText: var(--sf-red);
+  --color-errorTextDark: var(--palette-red150);
+  --color-errorTextDarker: var(--color-errorTextDark);
+  --color-errorTextMenu: var(--palette-red200);
+  --color-errorBorder: var(--sf-red);
+  --color-upcomingBackground: var(--sf-primary-tint);
+  --color-upcomingText: var(--sf-primary-soft);
+  --color-upcomingBorder: var(--color-tableBorder);
+
+  --color-formLabelText: var(--sf-text-secondary);
+  --color-formLabelBackground: var(--sf-surface-raised);
+  --color-formInputBackground: var(--sf-surface-sunken);
+  --color-formInputBackgroundSelected: var(--sf-surface);
+  --color-formInputBackgroundSelection: var(--sf-primary);
+  --color-formInputBorder: var(--sf-border-strong);
+  --color-formInputTextReadOnlySelection: var(--sf-surface);
+  --color-formInputBorderSelected: var(--sf-primary-soft);
+  --color-formInputText: var(--sf-text);
+  --color-formInputTextSelected: #ffffff;
+  --color-formInputTextPlaceholder: var(--sf-text-muted);
+  --color-formInputTextPlaceholderSelected: var(--sf-text-secondary);
+  --color-formInputTextSelection: var(--sf-surface);
+  --color-formInputShadowSelected: var(--sf-primary-tint-strong);
+  --color-formInputTextHighlight: var(--sf-primary-soft);
+  --color-checkboxText: var(--color-tableText);
+  --color-checkboxBackgroundSelected: var(--sf-primary-button);
+  --color-checkboxBorderSelected: var(--sf-primary-button);
+  --color-checkboxShadowSelected: var(--sf-primary-tint-strong);
+  --color-checkboxToggleBackground: var(--sf-border-strong);
+  --color-checkboxToggleBackgroundSelected: var(--sf-primary-button);
+  --color-checkboxToggleDisabled: var(--sf-surface-raised);
+
+  --color-pillBackground: var(--sf-surface-raised);
+  --color-pillBackgroundLight: var(--sf-surface-sunken);
+  --color-pillText: var(--sf-text);
+  --color-pillTextHighlighted: var(--sf-primary-soft);
+  --color-pillBorder: var(--sf-border-strong);
+  --color-pillBorderDark: var(--color-pillBorder);
+  --color-pillBackgroundSelected: var(--sf-primary-tint-strong);
+  --color-pillTextSelected: var(--sf-primary-soft);
+  --color-pillBorderSelected: var(--sf-primary-soft);
+  --color-pillTextSubdued: var(--sf-text-muted);
+
+  --color-reportsRed: var(--sf-red);
+  --color-reportsBlue: var(--sf-primary);
+  --color-reportsGreen: var(--sf-green);
+  --color-reportsGray: var(--sf-text-muted);
+  --color-reportsLabel: var(--color-pageText);
+  --color-reportsInnerLabel: var(--sf-text);
+  --color-reportsNumberPositive: var(--color-numberPositive);
+  --color-reportsNumberNegative: var(--color-numberNegative);
+  --color-reportsNumberNeutral: var(--color-numberNeutral);
+  --color-reportsChartFill: var(--sf-primary);
+
+  --color-noteTagBackground: var(--sf-primary-tint-strong);
+  --color-noteTagBackgroundHover: var(--sf-primary);
+  --color-noteTagDefault: var(--sf-primary-deep);
+  --color-noteTagText: var(--sf-text);
+
+  --color-budgetOtherMonth: var(--sf-surface-sunken);
+  --color-budgetCurrentMonth: var(--sf-surface);
+  --color-budgetHeaderOtherMonth: var(--sf-surface-sunken);
+  --color-budgetHeaderCurrentMonth: var(--sf-surface);
+
+  --color-floatingActionBarBackground: var(--sf-surface-raised);
+  --color-floatingActionBarBorder: var(--sf-primary-soft);
+  --color-floatingActionBarText: var(--sf-text);
+
+  --color-tooltipText: var(--sf-text);
+  --color-tooltipBackground: #2f3138;
+  --color-tooltipBorder: var(--sf-border-strong);
+
+  --color-calendarCellBackground: var(--sf-surface-sunken);
+
+  --color-overlayBackground: rgba(0, 0, 0, 0.5);
+
+  --color-chartQual1: var(--sf-primary);
+  --color-chartQual2: var(--sf-cyan);
+  --color-chartQual3: var(--sf-green);
+  --color-chartQual4: var(--sf-orange);
+  --color-chartQual5: var(--sf-yellow);
+  --color-chartQual6: #7b5cf0;
+  --color-chartQual7: var(--sf-red);
+  --color-chartQual8: var(--sf-pink);
+  --color-chartQual9: #c8f23d;
+}
